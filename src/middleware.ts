@@ -4,9 +4,13 @@ import { type NextRequest, NextResponse } from "next/server";
 export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const isAuth = !!token;
-  const isProtected =
-    req.nextUrl.pathname.startsWith("/dashboard") ||
-    req.nextUrl.pathname.startsWith("/edit");
+
+  const protectedPaths = ["/", "/dashboard", "/edit"];
+  const isProtected = protectedPaths.some(
+    (path) =>
+      req.nextUrl.pathname === path ||
+      req.nextUrl.pathname.startsWith(`${path}/`)
+  );
 
   if (isProtected && !isAuth) {
     return NextResponse.redirect(new URL("/signin", req.url));
@@ -16,5 +20,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*",],
+  matcher: ["/", "/dashboard/:path*", "/edit/:path*"],
 };

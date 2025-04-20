@@ -1,5 +1,5 @@
 "use client";
-
+import { useRouter } from "next/navigation"; // <-- Add this
 import type React from "react";
 import { useState, useEffect } from "react";
 import { PlusCircle, Pencil, Trash2, Loader2 } from "lucide-react";
@@ -16,20 +16,28 @@ interface Task {
 export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState("");
-  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
-  const [editingTaskName, setEditingTaskName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  const router = useRouter();
+  //FETCH ALL TASKS
   const fetchTasks = async () => {
-    const res = await fetch("/api/tasks");
-    const data = await res.json();
-    setTasks(data);
+    setError(null);
+    try {
+      const res = await fetch("/api/tasks");
+      if (!res.ok) throw new Error("Failed to fetch tasks");
+      const data = await res.json();
+      setTasks(data);
+    } catch (err) {
+      console.error("Error fetching tasks:", err);
+      setError("Error getting tasks");
+    }
   };
 
   useEffect(() => {
     fetchTasks();
   }, []);
-
+  //ADD NEW TASK
   const addTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newTask.trim() === "") return;
@@ -41,6 +49,8 @@ export default function Dashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: newTask }),
       });
+      if (!res.ok) throw new Error("Failed to add task");
+
       const newTaskItem = await res.json();
       setTasks([...tasks, newTaskItem]);
       setNewTask("");
@@ -50,40 +60,22 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
-
-  const startEditing = (task: Task) => {
-    setEditingTaskId(task.id);
-    setEditingTaskName(task.title);
-  };
-
-  const saveEdit = async () => {
-    if (editingTaskName.trim() === "") return;
-
-    const res = await fetch(`/api/tasks/${editingTaskId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: editingTaskName }),
-    });
-    const updatedTask = await res.json();
-    setTasks(
-      tasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
-    );
-    setEditingTaskId(null);
-    setEditingTaskName("");
-  };
-
-  const cancelEdit = () => {
-    setEditingTaskId(null);
-    setEditingTaskName("");
-  };
-
+  //DELETE TASK
   const deleteTask = async (id: string) => {
-    const res = await fetch(`/api/tasks/${id}`, {
-      method: "DELETE",
-    });
-    if (res.ok) {
+    try {
+      const res = await fetch(`/api/tasks/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete task");
+
       setTasks(tasks.filter((task) => task.id !== id));
+    } catch (error) {
+      console.error("Error deleting task:", error);
     }
+  };
+
+  const handleEditNavigation = (taskId: string) => {
+    router.push(`/edit/${taskId}`);
   };
 
   return (
@@ -102,7 +94,11 @@ export default function Dashboard() {
               className="flex-1"
               disabled={loading}
             />
-            <Button type="submit" disabled={loading} className="cursor-pointer">
+            <Button
+              type="submit"
+              disabled={loading || newTask.length === 0}
+              className="cursor-pointer"
+            >
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -118,7 +114,9 @@ export default function Dashboard() {
           </form>
 
           <div className="space-y-4">
-            {tasks.length === 0 ? (
+            {error ? (
+              <p className="text-center text-red-500 py-4">{error}</p>
+            ) : tasks?.length === 0 ? (
               <p className="text-center text-muted-foreground py-4">
                 No tasks yet. Add your first task above!
               </p>
@@ -128,55 +126,35 @@ export default function Dashboard() {
                   key={task.id}
                   className="flex items-center justify-between p-4 border rounded-lg"
                 >
-                  {editingTaskId === task.id ? (
-                    <div className="flex items-center gap-2 flex-1">
-                      <Input
-                        type="text"
-                        value={editingTaskName}
-                        onChange={(e) => setEditingTaskName(e.target.value)}
-                        autoFocus
-                        className="flex-1"
-                      />
-                      <Button size="sm" onClick={saveEdit}>
-                        Save
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={cancelEdit}>
-                        Cancel
-                      </Button>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex-1">
-                        <span className="block font-medium">{task.title}</span>
-                        {task.createdAt && (
-                          <span className="text-xs text-muted-foreground">
-                            Added on:{" "}
-                            {new Date(task.createdAt).toLocaleDateString()}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          onClick={() => startEditing(task)}
-                          className="cursor-pointer"
-                        >
-                          <Pencil className="h-4 w-4" />
-                          <span className="sr-only">Edit</span>
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="destructive"
-                          onClick={() => deleteTask(task.id)}
-                          className="cursor-pointer"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Delete</span>
-                        </Button>
-                      </div>
-                    </>
-                  )}
+                  <div className="flex-1">
+                    <span className="block font-medium">{task.title}</span>
+                    {task.createdAt && (
+                      <span className="text-xs text-muted-foreground">
+                        Added on:{" "}
+                        {new Date(task.createdAt).toLocaleDateString()}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={() => handleEditNavigation(task.id)}
+                      className="cursor-pointer"
+                    >
+                      <Pencil className="h-4 w-4" />
+                      <span className="sr-only">Edit</span>
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      onClick={() => deleteTask(task.id)}
+                      className="cursor-pointer"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Delete</span>
+                    </Button>
+                  </div>
                 </div>
               ))
             )}

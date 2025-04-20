@@ -41,7 +41,7 @@ export function Navbar() {
           className="text-2xl font-bold tracking-tight text-primary hover:opacity-80 transition"
         >
           goAccelovate Assessment Task
-        </Link>
+        </Link> 
 
         <div className="flex items-center gap-4">
           <DropdownMenu>
