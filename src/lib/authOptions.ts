@@ -26,8 +26,12 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email },
         });
 
-        if (!user || !user.password) {
-          throw new Error("Invalid credentials");
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        if (!user.password) {
+          throw new Error("This user must sign in with Google");
         }
 
         const isValid = await compare(credentials.password, user.password);

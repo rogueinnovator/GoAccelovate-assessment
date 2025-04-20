@@ -152,7 +152,7 @@ export default function Dashboard() {
                       className="cursor-pointer"
                     >
                       <Trash2 className="h-4 w-4" />
-                      <span className="sr-only">Delete</span>
+                      <span className="sr-only">Delete</span> 
                     </Button>
                   </div>
                 </div>
