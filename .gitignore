@@ -5,3 +5,9 @@ node_modules
 .vercel
 .env.local
 .env.production
+# Environment Variables
+.env
+.env.local
+.env.production
+.env.development
+.env.*
