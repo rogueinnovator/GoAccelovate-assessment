@@ -1,3 +1,6 @@
+"use client";
+import { Navbar } from "@/components/navbar";
+import { SessionProvider } from "next-auth/react";
 export default function UserPagesLayout({
   children,
 }: {
@@ -5,7 +8,10 @@ export default function UserPagesLayout({
 }) {
   return (
     <div>
-      <main>{children}</main>
+      <SessionProvider>
+        <Navbar />
+        <main>{children}</main>
+      </SessionProvider>
     </div>
   );
 }
