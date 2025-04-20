@@ -1,11 +1,11 @@
-// app/api/tasks/[id]/route.ts
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
+import { authOptions } from "@/lib/authOptions";
+
 //UPDATE A TASK
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user?.email) {
@@ -13,7 +13,7 @@ export async function PUT(
       status: 401,
     });
   }
-  const { id } = params;
+  const { id } = await params;
   const body = await req.json();
   const { title } = body;
   if (!id || !title || typeof title !== "string") {
@@ -41,10 +41,11 @@ export async function PUT(
     });
   }
 }
+
 //DELETE THE TASK
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user?.email) {
@@ -53,7 +54,7 @@ export async function DELETE(
     });
   }
 
-  const { id } = params;
+  const { id } = await params;
 
   if (!id) {
     return new Response(JSON.stringify({ message: "Invalid task ID" }), {

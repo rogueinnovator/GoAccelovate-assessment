@@ -1,9 +1,8 @@
 "use server";
 
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
-
+import { authOptions } from "@/lib/authOptions";
 // CREATE A TASK
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);

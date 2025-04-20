@@ -13,9 +13,8 @@ This is a **Next.js** application developed for the technical assessment at **go
 
 ## 🌐 Live Demo
 
-🔗 [View the deployed app here](https://your-vercel-app-url.vercel.app)
+🔗 [View the deployed app here](https://go-accelovate-assessment-euunw3glq-rogueinnovators-projects.vercel.app)
 
-> _Replace the above link with your actual Vercel deployment URL._
 
 ---
 
