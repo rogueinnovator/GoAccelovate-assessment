@@ -20,21 +20,26 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
+
     const res = await signIn("credentials", {
       redirect: false,
       email,
       password,
     });
+
     if (res?.ok) {
       router.push("/dashboard");
     } else {
-      console.error("Error signIN");
+      setError("Invalid email or password.");
     }
+
     setIsLoading(false);
   };
 
@@ -49,6 +54,12 @@ export default function SignIn() {
         </CardHeader>
         <CardContent className="p-0">
           <form onSubmit={handleSubmit} className="space-y-3">
+            {error && (
+              <div className="text-sm text-red-500 font-medium -mt-2">
+                {error}
+              </div>
+            )}
+
             {[
               {
                 id: "email",
@@ -83,6 +94,7 @@ export default function SignIn() {
                 />
               </div>
             ))}
+
             <Button
               type="submit"
               className="w-full cursor-pointer"

@@ -13,7 +13,7 @@ This is a **Next.js** application developed for the technical assessment at **go
 
 ## 🌐 Live Demo
 
-🔗 [View the deployed app here](https://go-accelovate-assessment-euunw3glq-rogueinnovators-projects.vercel.app)
+🔗 [View the deployed app here](https://go-accelovate-assessment.vercel.app/signin)
 
 
 ---
