@@ -15,7 +15,6 @@ This is a **Next.js** application developed for the technical assessment at **go
 
 🔗 [View the deployed app here](https://go-accelovate-assessment.vercel.app/signin)
 
-
 ---
 
 ## ✅ Features
@@ -58,3 +57,19 @@ This is a **Next.js** application developed for the technical assessment at **go
    git clone https://github.com/rogueinnovator/goaccelovate-assessment.git
    cd goaccelovate-assessment
    ```
+
+---
+
+## 📸 Screenshots
+
+### 1. **Sign-In Page**
+   ![Sign-In Page](ss/image.png)
+
+### 2. **Register Page**
+   ![Register Page](ss/image-1.png)
+
+### 3. **Dashboard**
+   ![Dashboard](ss/image-2.png)
+
+### 4. **Edit Task Page**
+   ![Edit Task Page](ss/image-3.png)
